@@ -93,6 +93,9 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   // Raffle settings state
   const [settingsNombre, setSettingsNombre] = useState(raffle?.nombre || 'Gran Sorteo 2026');
   const [settingsPrecio, setSettingsPrecio] = useState(raffle?.precio_numero || 2000);
+  const [settingsFechaSorteo, setSettingsFechaSorteo] = useState(
+    raffle?.fecha_sorteo ? raffle.fecha_sorteo.slice(0, 16) : new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16)
+  );
   const [settingsFlowLink, setSettingsFlowLink] = useState(raffle?.flowLink || 'https://www.flow.cl/');
   const [settingsFlowApiKey, setSettingsFlowApiKey] = useState(raffle?.flowApiKey || '27FECD5E-E313-40F9-8AC1-73BB832L658B');
   const [settingsFlowSecretKey, setSettingsFlowSecretKey] = useState(raffle?.flowSecretKey || 'cb34518dcdfef8b61a4a55495faef1c1a50e54eb');
@@ -118,6 +121,9 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
     if (raffle) {
       setSettingsNombre(raffle.nombre || 'Gran Sorteo 2026');
       setSettingsPrecio(raffle.precio_numero || 2000);
+      if (raffle.fecha_sorteo) {
+        setSettingsFechaSorteo(raffle.fecha_sorteo.slice(0, 16));
+      }
       setSettingsFlowLink(raffle.flowLink || 'https://www.flow.cl/');
       setSettingsFlowApiKey(raffle.flowApiKey || '27FECD5E-E313-40F9-8AC1-73BB832L658B');
       setSettingsFlowSecretKey(raffle.flowSecretKey || 'cb34518dcdfef8b61a4a55495faef1c1a50e54eb');
@@ -273,6 +279,7 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
         body: JSON.stringify({
           nombre: settingsNombre,
           precio_numero: Number(settingsPrecio),
+          fecha_sorteo: new Date(settingsFechaSorteo).toISOString(),
           flowLink: settingsFlowLink,
           flowApiKey: settingsFlowApiKey,
           flowSecretKey: settingsFlowSecretKey,
@@ -1241,6 +1248,23 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
                   />
                   <p className="text-[11px] text-slate-500 mt-1">
                     Se mostrará en la barra superior, portada hero y en los comprobantes de compra.
+                  </p>
+                </div>
+
+                {/* Fecha tope de compra y sorteo */}
+                <div>
+                  <label className="block text-slate-300 mb-1.5 font-semibold">
+                    Fecha tope de compra de tickets y sorteo: <span className="text-amber-400">*</span>
+                  </label>
+                  <input
+                    type="datetime-local"
+                    required
+                    value={settingsFechaSorteo}
+                    onChange={(e) => setSettingsFechaSorteo(e.target.value)}
+                    className="w-full rounded-xl border border-slate-800 bg-slate-900 p-3 text-sm text-white font-mono"
+                  />
+                  <p className="text-[11px] text-slate-500 mt-1">
+                    Define la fecha límite exacta hasta la cual se pueden comprar tickets y cuando se realizará el sorteo automático.
                   </p>
                 </div>
 
