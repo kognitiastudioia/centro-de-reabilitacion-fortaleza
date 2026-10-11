@@ -462,8 +462,8 @@ export function useRaffle() {
           payment_provider: params.paymentProvider,
           transaction_id: order.transaction_id,
           amount: order.total,
-          status: 'success',
-          created_at: new Date().toISOString(),
+          status: 'approved',
+          paid_at: new Date().toISOString(),
         };
 
         const purchasedResult = {
@@ -570,8 +570,8 @@ export function useRaffle() {
           payment_provider: params.paymentProvider,
           transaction_id: order.transaction_id,
           amount: order.total,
-          status: 'success',
-          created_at: new Date().toISOString(),
+          status: 'approved',
+          paid_at: new Date().toISOString(),
         };
 
         const purchasedResult = {

@@ -60,6 +60,25 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Authentication state
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
+    () => sessionStorage.getItem('admin_logged_in') === 'true'
+  );
+  const [loginUser, setLoginUser] = useState('');
+  const [loginPass, setLoginPass] = useState('');
+  const [loginError, setLoginError] = useState<string | null>(null);
+
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (loginUser.trim() === '@willy' && loginPass === 'Reygaby3009') {
+      setIsAuthenticated(true);
+      sessionStorage.setItem('admin_logged_in', 'true');
+      setLoginError(null);
+    } else {
+      setLoginError('Credenciales incorrectas. Verifique los datos ingresados.');
+    }
+  };
+
   // Manual payment modal state
   const [manualPayNumber, setManualPayNumber] = useState<string | null>(null);
   const [manualBuyerName, setManualBuyerName] = useState('');
@@ -390,6 +409,77 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
 
   if (!isOpen) return null;
 
+  if (!isAuthenticated) {
+    return (
+      <div className="fixed inset-0 z-50 overflow-y-auto p-4 flex items-center justify-center">
+        <div onClick={onClose} className="fixed inset-0 bg-slate-950/85 backdrop-blur-md" />
+        <div className="relative w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900 shadow-2xl p-6 sm:p-8 z-10 space-y-6">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400">
+                <Lock className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-white">Acceso Panel Admin</h3>
+                <p className="text-xs text-slate-400">Ingresa tus credenciales de acceso</p>
+              </div>
+            </div>
+            <button onClick={onClose} className="text-slate-400 hover:text-white cursor-pointer">
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+
+          {loginError && (
+            <div className="rounded-xl border border-rose-500/30 bg-rose-950/40 p-3 text-xs text-rose-300">
+              {loginError}
+            </div>
+          )}
+
+          <form onSubmit={handleLogin} autoComplete="off" className="space-y-4 text-xs">
+            <div>
+              <label className="block text-slate-300 mb-1 font-semibold">Usuario:</label>
+              <input
+                type="text"
+                required
+                autoComplete="off"
+                name="admin_user_secure"
+                data-lpignore="true"
+                placeholder="Usuario autorizado"
+                value={loginUser}
+                onChange={(e) => setLoginUser(e.target.value)}
+                className="w-full rounded-xl border border-slate-800 bg-slate-950 p-3 text-white placeholder-slate-600 focus:border-amber-500 focus:outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="block text-slate-300 mb-1 font-semibold">Clave / Contraseña:</label>
+              <input
+                type="password"
+                required
+                autoComplete="new-password"
+                name="admin_pass_secure"
+                data-lpignore="true"
+                placeholder="••••••••••••"
+                value={loginPass}
+                onChange={(e) => setLoginPass(e.target.value)}
+                className="w-full rounded-xl border border-slate-800 bg-slate-950 p-3 text-white placeholder-slate-600 focus:border-amber-500 focus:outline-none"
+              />
+            </div>
+
+            <div className="pt-2">
+              <button
+                type="submit"
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 font-bold text-slate-950 hover:from-amber-400 hover:to-amber-500 cursor-pointer shadow-lg shadow-amber-500/20 text-sm"
+              >
+                Ingresar al Panel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto p-2 sm:p-4 md:p-6 flex items-center justify-center">
       <div
@@ -415,6 +505,16 @@ export const AdminPanelModal: React.FC<AdminPanelModalProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                setIsAuthenticated(false);
+                sessionStorage.removeItem('admin_logged_in');
+              }}
+              title="Cerrar sesión de administrador"
+              className="rounded-lg px-2.5 py-1.5 border border-slate-700 bg-slate-800 text-xs text-slate-300 hover:text-white hover:bg-slate-700 transition-colors cursor-pointer"
+            >
+              Bloquear
+            </button>
             <button
               onClick={fetchAdminData}
               title="Refrescar datos"
